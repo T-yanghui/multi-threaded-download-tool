@@ -3,7 +3,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeUnit;
