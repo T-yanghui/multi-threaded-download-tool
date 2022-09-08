@@ -14,7 +14,7 @@ import java.util.concurrent.RecursiveAction;
  * @createTime 2022/09/07
  */
 public class MultithreadedDownloadTool {
-    private long fileSize;
+    private static long fileSize;
     private static final long splitThreshold=1L*1024L*1024L;
     private static RandomAccessFile randomAccessFile;
     private static String requestURL;
@@ -27,16 +27,24 @@ public class MultithreadedDownloadTool {
         File file=new File(storePath.trim());
         this.randomAccessFile=new RandomAccessFile(file,FILE_ACCESS_MODE);
         this.fileSize=HttpUtils.getHttpConnection(new Properties()).getContentLength();
+        System.out.println(fileSize);
         this.randomAccessFile.setLength(fileSize);
         this.threadNum=threadNum;
     }
-    public void downLoad(){
+    public void downLoad() throws IOException {
         int availableThread=Runtime.getRuntime().availableProcessors();
         ForkJoinPool forkJoinPool=new ForkJoinPool(availableThread<threadNum?availableThread:threadNum);
         forkJoinPool.submit(new workers((int)fileSize));
         forkJoinPool.shutdown();
+        randomAccessFile.close();
     }
-    private static class HttpUtils {
+    public long getFileSize(){
+        return fileSize;
+    }
+    public RandomAccessFile getRandomAccessFile(){
+        return randomAccessFile;
+    }
+    public static class HttpUtils {
         public static HttpURLConnection getHttpConnection(Properties properties) throws IOException {
             URL url = new URL(requestURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -112,6 +120,6 @@ public class MultithreadedDownloadTool {
         threadNum=in.nextInt();
         in.close();
         MultithreadedDownloadTool multithreadedDownloadTool=new MultithreadedDownloadTool(url,path,threadNum);
-
+        multithreadedDownloadTool.downLoad();
     }
 }
